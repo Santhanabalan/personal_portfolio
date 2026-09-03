@@ -1,13 +1,32 @@
 ---
+import octicons from '@primer/octicons';
+
 interface Props {
 	mode: 'login' | 'signup';
 }
 
 const { mode } = Astro.props;
 const isSignup = mode === 'signup';
+const githubIcon = octicons['mark-github'].toSVG({ width: 20, fill: 'currentColor' });
 ---
 
-<form id="auth-form" data-mode={mode} class="mt-10 space-y-5">
+<div class="mt-10">
+	<button
+		id="github-auth"
+		type="button"
+		class="inline-flex min-h-12 w-full items-center justify-center gap-3 bg-[var(--action)] px-6 font-bold text-[var(--action-text)] transition-colors hover:bg-[var(--accent)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)] disabled:cursor-wait disabled:opacity-60"
+	>
+		<Fragment set:html={githubIcon} />
+		<span id="github-auth-label">Continue with GitHub</span>
+	</button>
+	<div class="my-6 flex items-center gap-4" aria-hidden="true">
+		<span class="h-px flex-1 bg-[var(--ink)]/20"></span>
+		<span class="font-mono text-xs uppercase text-[var(--muted)]">or use email</span>
+		<span class="h-px flex-1 bg-[var(--ink)]/20"></span>
+	</div>
+</div>
+
+<form id="auth-form" data-mode={mode} class="space-y-5">
 	{
 		isSignup && (
 			<label class="block">
@@ -58,7 +77,30 @@ const isSignup = mode === 'signup';
 	const form = document.querySelector<HTMLFormElement>('#auth-form');
 	const errorMessage = document.querySelector<HTMLParagraphElement>('#auth-error');
 	const submitButton = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+	const githubButton = document.querySelector<HTMLButtonElement>('#github-auth');
+	const githubButtonLabel = document.querySelector<HTMLSpanElement>('#github-auth-label');
 	const authClient = createAuthClient();
+
+	githubButton?.addEventListener('click', async () => {
+		errorMessage?.classList.add('hidden');
+		githubButton.setAttribute('disabled', '');
+		if (githubButtonLabel) githubButtonLabel.textContent = 'Connecting to GitHub...';
+
+		const result = await authClient.signIn.social({
+			provider: 'github',
+			callbackURL: '/profile',
+			errorCallbackURL: '/login?error=github',
+		});
+
+		if (result.error) {
+			if (errorMessage) {
+				errorMessage.textContent = result.error.message ?? 'GitHub authentication could not be started.';
+				errorMessage.classList.remove('hidden');
+			}
+			githubButton.removeAttribute('disabled');
+			if (githubButtonLabel) githubButtonLabel.textContent = 'Continue with GitHub';
+		}
+	});
 
 	form?.addEventListener('submit', async (event) => {
 		event.preventDefault();
