@@ -1,2 +1,4 @@
 BETTER_AUTH_SECRET=replace-with-at-least-32-random-characters
 BETTER_AUTH_URL=http://localhost:8787
+GITHUB_CLIENT_ID=replace-with-local-oauth-app-client-id
+GITHUB_CLIENT_SECRET=replace-with-local-oauth-app-client-secret
