@@ -8,6 +8,13 @@
 		"directory": "./dist",
 		"binding": "ASSETS"
 	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "personal-portfolio-auth",
+			"database_id": "07005da4-c027-4b0e-bc96-fd050e750bb1",
+		},
+	],
 	"observability": {
 		"logs": {
 			"enabled": true,
