@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { auth } from '../lib/auth';
+import { env } from 'cloudflare:workers';
 
 export const prerender = false;
 
@@ -48,6 +49,29 @@ if (currentPage > totalPages) return Astro.redirect(buildPageUrl(totalPages));
 const firstResult = result.total === 0 ? 0 : (currentPage - 1) * pageSize + 1;
 const lastResult = Math.min(currentPage * pageSize, result.total);
 
+interface AuditRecord {
+	id: string;
+	action: string;
+	reason: string | null;
+	status: string;
+	createdAt: number;
+	actorName: string | null;
+	targetName: string | null;
+}
+
+const database = env.DB;
+const auditResult = await database
+	.prepare(
+		`select log."id", log."action", log."reason", log."status", log."createdAt",
+			actor."name" as "actorName", target."name" as "targetName"
+		from "adminAuditLog" as log
+		left join "user" as actor on actor."id" = log."actorUserId"
+		left join "user" as target on target."id" = log."targetUserId"
+		order by log."createdAt" desc
+		limit 20`,
+	)
+	.all<AuditRecord>();
+
 const sessionsByUser = new Map(
 	await Promise.all(
 		result.users.map(async (user) => {
@@ -60,7 +84,7 @@ const sessionsByUser = new Map(
 	),
 );
 
-const formatActivity = (value: Date | string) =>
+const formatActivity = (value: Date | string | number) =>
 	new Intl.DateTimeFormat('en', {
 		dateStyle: 'medium',
 		timeStyle: 'short',
@@ -256,14 +280,67 @@ const getLatestActivity = (sessions: Array<{ updatedAt: Date | string }>) => {
 				}
 			</div>
 		</nav>
+
+		<section class="mt-16 border-t border-[var(--ink)]/20 pt-10">
+			<div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+				<div>
+					<p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--accent)]">Audit trail</p>
+					<h2 class="mt-2 [font-family:'Bodoni_72',Didot,serif] text-4xl font-bold">Recent admin activity</h2>
+				</div>
+				<p class="font-mono text-xs text-[var(--muted)]">Latest 20 attempts</p>
+			</div>
+
+			<div class="mt-6 overflow-x-auto border border-[var(--ink)]/20 bg-[var(--surface)]">
+				<table class="w-full min-w-[44rem] border-collapse text-left">
+					<thead class="bg-[var(--action)] text-[var(--action-text)]">
+						<tr class="font-mono text-xs uppercase tracking-[0.12em]">
+							<th class="px-5 py-4" scope="col">When</th>
+							<th class="px-5 py-4" scope="col">Actor</th>
+							<th class="px-5 py-4" scope="col">Action</th>
+							<th class="px-5 py-4" scope="col">Target</th>
+							<th class="px-5 py-4" scope="col">Outcome</th>
+						</tr>
+					</thead>
+					<tbody class="divide-y divide-[var(--ink)]/15">
+						{
+							auditResult.results.length === 0 ? (
+								<tr>
+									<td colspan="5" class="px-5 py-10 text-center text-[var(--muted)]">
+										No administrative actions recorded yet.
+									</td>
+								</tr>
+							) : (
+								auditResult.results.map((entry) => (
+									<tr>
+										<td class="px-5 py-4 text-sm text-[var(--muted)]">{formatActivity(entry.createdAt)}</td>
+										<td class="px-5 py-4 font-bold">{entry.actorName ?? 'Deleted user'}</td>
+										<td class="px-5 py-4">
+											<p class="font-mono text-xs font-bold uppercase">{entry.action}</p>
+											{entry.reason && <p class="mt-1 text-xs text-[var(--muted)]">{entry.reason}</p>}
+										</td>
+										<td class="px-5 py-4 font-bold">{entry.targetName ?? 'Deleted user'}</td>
+										<td class="px-5 py-4">
+											<span
+												class:list={[
+													'font-mono text-xs font-bold uppercase',
+													entry.status === 'succeeded' ? 'text-[var(--accent)]' : 'text-[var(--danger-strong)]',
+												]}
+											>
+												{entry.status}
+											</span>
+										</td>
+									</tr>
+								))
+							)
+						}
+					</tbody>
+				</table>
+			</div>
+		</section>
 	</main>
 </Layout>
 
 <script>
-	import { createAuthClient } from 'better-auth/client';
-	import { adminClient } from 'better-auth/client/plugins';
-
-	const authClient = createAuthClient({ plugins: [adminClient()] });
 	const message = document.querySelector<HTMLParagraphElement>('#admin-message');
 
 	document.querySelectorAll<HTMLButtonElement>('button[data-action]').forEach((button) => {
@@ -278,16 +355,14 @@ const getLatestActivity = (sessions: Array<{ updatedAt: Date | string }>) => {
 			button.setAttribute('disabled', '');
 			message?.classList.add('hidden');
 
-			const result =
-				action === 'role'
-					? await authClient.admin.setRole({ userId, role: button.dataset.role as 'admin' | 'user' })
-					: action === 'ban'
-						? await authClient.admin.banUser({ userId, banReason: 'Disabled by administrator' })
-						: action === 'unban'
-							? await authClient.admin.unbanUser({ userId })
-							: await authClient.admin.revokeUserSessions({ userId });
+			const response = await fetch(`/api/admin/users/${encodeURIComponent(userId)}`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ action, role: button.dataset.role }),
+			});
+			const result = await response.json<{ success?: boolean; error?: string }>();
 
-			if (result.error) {
+			if (!response.ok || result.error) {
 				if (message) {
 					message.textContent = result.error.message ?? 'The access change could not be completed.';
 					message.classList.remove('hidden');
