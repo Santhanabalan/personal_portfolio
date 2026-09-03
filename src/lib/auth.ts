@@ -1,5 +1,6 @@
 import { env } from 'cloudflare:workers';
 import { betterAuth } from 'better-auth';
+import { admin } from 'better-auth/plugins';
 
 interface AuthEnv {
 	DB: D1Database;
@@ -22,4 +23,10 @@ export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true,
 	},
+	plugins: [
+		admin({
+			defaultRole: 'user',
+			adminRoles: ['admin'],
+		}),
+	],
 });
