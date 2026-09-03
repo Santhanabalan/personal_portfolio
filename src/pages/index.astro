@@ -1,17 +1,119 @@
 ---
+import Layout from '../layouts/Layout.astro';
 
+const projects = [
+	{
+		title: 'Edge Notes',
+		description: 'A fast publishing workspace that serves technical notes from the edge.',
+		stack: ['Astro', 'Cloudflare', 'TypeScript'],
+		accent: 'bg-[#0a6c4d]',
+	},
+	{
+		title: 'Signal Board',
+		description: 'A focused operations dashboard for tracking service health and incidents.',
+		stack: ['TypeScript', 'APIs', 'Observability'],
+		accent: 'bg-[#e75b3a]',
+	},
+	{
+		title: 'Route Zero',
+		description: 'An experiment in low-latency routing for globally distributed applications.',
+		stack: ['Edge Workers', 'KV', 'Web Standards'],
+		accent: 'bg-[#2455a4]',
+	},
+];
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout
+	title="Santhanabalan | Developer Portfolio"
+	description="Santhanabalan builds fast, dependable web experiences and edge-native systems."
+>
+	<header class="flex items-center justify-between border-b border-[#17211b]/20 py-5">
+		<a
+			href="/"
+			class="font-mono text-sm font-bold uppercase tracking-widest focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0a6c4d]"
+		>
+			SB / Portfolio
+		</a>
+		<nav aria-label="Primary navigation">
+			<ul class="flex gap-5 text-sm font-semibold sm:gap-8">
+				<li><a class="underline-offset-4 hover:underline focus-visible:underline" href="#about">About</a></li>
+				<li><a class="underline-offset-4 hover:underline focus-visible:underline" href="#projects">Projects</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<main id="main-content">
+		<section class="grid min-h-[72svh] content-center gap-10 border-b border-[#17211b]/20 py-16 lg:grid-cols-[1fr_18rem] lg:items-end">
+			<div>
+				<p class="mb-5 font-mono text-xs font-bold uppercase tracking-[0.18em] text-[#0a6c4d]">
+					Hello, I am Santhanabalan
+				</p>
+				<h1 class="max-w-4xl [font-family:'Bodoni_72',Didot,serif] text-5xl leading-[0.98] font-bold sm:text-7xl lg:text-8xl">
+					I build for the<br />fast side of the web.
+				</h1>
+				<p class="mt-7 max-w-2xl text-lg leading-8 text-[#425048] sm:text-xl">
+					Developer focused on dependable interfaces, thoughtful systems, and edge infrastructure that keeps distance out of the way.
+				</p>
+				<a
+					href="#projects"
+					class="mt-9 inline-flex min-h-12 items-center bg-[#17211b] px-6 font-bold text-white transition-colors hover:bg-[#0a6c4d] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0a6c4d]"
+				>
+					View selected work
+				</a>
+			</div>
+
+			<aside class="border-l-4 border-[#f0c94d] pl-5" aria-label="Current focus">
+				<p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[#68736c]">Currently exploring</p>
+				<p class="mt-2 text-lg font-bold">Astro, edge runtimes, and the quiet craft of performance.</p>
+			</aside>
+		</section>
+
+		<section id="about" class="grid gap-8 border-b border-[#17211b]/20 py-20 md:grid-cols-[12rem_1fr] md:py-28">
+			<h2 class="font-mono text-sm font-bold uppercase tracking-[0.18em] text-[#0a6c4d]">About</h2>
+			<div class="max-w-3xl">
+				<p class="[font-family:'Bodoni_72',Didot,serif] text-3xl leading-tight font-bold sm:text-4xl">
+					I turn complex technical problems into web experiences that feel direct, useful, and fast.
+				</p>
+				<p class="mt-6 max-w-2xl text-lg leading-8 text-[#425048]">
+					My work sits between frontend engineering and cloud infrastructure. I care about clear architecture, resilient delivery, and shipping less JavaScript whenever the browser does not need it.
+				</p>
+			</div>
+		</section>
+
+		<section id="projects" class="py-20 md:py-28">
+			<div class="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+				<div>
+					<p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[#0a6c4d]">Selected work</p>
+					<h2 class="mt-3 [font-family:'Bodoni_72',Didot,serif] text-4xl font-bold sm:text-5xl">Projects in the build log</h2>
+				</div>
+				<p class="max-w-xs text-sm leading-6 text-[#68736c]">A few representative projects. Full case studies are coming next.</p>
+			</div>
+
+			<div class="grid gap-5 md:grid-cols-3">
+				{projects.map((project) => (
+					<article class="flex min-h-80 flex-col rounded-md border border-[#17211b]/20 bg-white p-6 shadow-[4px_4px_0_#17211b]">
+						<div class:list={['h-2 w-14', project.accent]} aria-hidden="true"></div>
+						<h3 class="mt-7 text-2xl font-bold">{project.title}</h3>
+						<p class="mt-4 leading-7 text-[#425048]">{project.description}</p>
+						<ul class="mt-6 flex flex-wrap gap-x-4 gap-y-2 font-mono text-xs font-bold uppercase text-[#68736c]" aria-label={`${project.title} technology stack`}>
+							{project.stack.map((technology) => <li>{technology}</li>)}
+						</ul>
+						<a
+							href="https://github.com/Santhanabalan"
+							class="mt-auto pt-8 font-bold underline decoration-2 underline-offset-4 hover:text-[#0a6c4d] focus-visible:text-[#0a6c4d]"
+							target="_blank"
+							rel="noreferrer"
+						>
+							View project <span aria-hidden="true">&rarr;</span>
+						</a>
+					</article>
+				))}
+			</div>
+		</section>
+	</main>
+
+	<footer class="flex flex-col justify-between gap-3 border-t border-[#17211b]/20 py-8 text-sm text-[#68736c] sm:flex-row">
+		<p>&copy; {new Date().getFullYear()} Santhanabalan</p>
+		<p>Built with Astro. Served with restraint.</p>
+	</footer>
+</Layout>
