@@ -9,11 +9,9 @@ interface AuthEnv {
 }
 
 const authEnv = env as unknown as AuthEnv;
-const trustedOrigins = [
-	authEnv.BETTER_AUTH_URL,
-	'http://localhost:4321',
-	'http://localhost:8787',
-].filter((origin): origin is string => Boolean(origin));
+const trustedOrigins = [authEnv.BETTER_AUTH_URL, 'http://localhost:4321', 'http://localhost:8787'].filter(
+	(origin): origin is string => Boolean(origin),
+);
 
 export const auth = betterAuth({
 	database: authEnv.DB,

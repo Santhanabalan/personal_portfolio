@@ -1,42 +1,42 @@
 {
-  "name": "personal-portfolio",
-  "type": "module",
-  "version": "0.0.1",
-  "engines": {
-    "node": ">=22.12.0"
-  },
-  "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "preview:edge": "npm run build && wrangler dev",
-    "deploy": "npm run build && wrangler deploy",
-    "generate-types": "wrangler types",
-    "format": "prettier . --write",
-    "format:check": "prettier . --check",
-    "lint": "eslint .",
-    "check": "npm run format:check && npm run lint && npm run build",
-    "astro": "astro"
-  },
-  "dependencies": {
-    "@astrojs/cloudflare": "^14.3.0",
-    "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.3.1",
-    "better-auth": "^1.7.2",
-    "tailwindcss": "^4.3.3",
-    "wrangler": "^4.129.0"
-  },
-  "allowScripts": {
-    "esbuild": true
-  },
-  "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@types/node": "^26.4.1",
-    "eslint": "^10.9.1",
-    "eslint-plugin-astro": "^3.1.0",
-    "globals": "^17.12.0",
-    "prettier": "^3.9.6",
-    "prettier-plugin-astro": "^0.14.1",
-    "typescript-eslint": "^8.69.0"
-  }
+	"name": "personal-portfolio",
+	"type": "module",
+	"version": "0.0.1",
+	"engines": {
+		"node": ">=22.12.0"
+	},
+	"scripts": {
+		"dev": "astro dev",
+		"build": "astro build",
+		"preview": "astro preview",
+		"preview:edge": "npm run build && wrangler dev",
+		"deploy": "npm run build && wrangler deploy",
+		"generate-types": "wrangler types",
+		"format": "prettier . --write",
+		"format:check": "prettier . --check",
+		"lint": "eslint .",
+		"check": "npm run format:check && npm run lint && npm run build",
+		"astro": "astro"
+	},
+	"dependencies": {
+		"@astrojs/cloudflare": "^14.3.0",
+		"@tailwindcss/vite": "^4.3.3",
+		"astro": "^7.3.1",
+		"better-auth": "^1.7.2",
+		"tailwindcss": "^4.3.3",
+		"wrangler": "^4.129.0"
+	},
+	"allowScripts": {
+		"esbuild": true
+	},
+	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"@types/node": "^26.4.1",
+		"eslint": "^10.9.1",
+		"eslint-plugin-astro": "^3.1.0",
+		"globals": "^17.12.0",
+		"prettier": "^3.9.6",
+		"prettier-plugin-astro": "^0.14.1",
+		"typescript-eslint": "^8.69.0"
+	}
 }

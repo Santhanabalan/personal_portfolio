@@ -12,16 +12,28 @@ if (!session) return Astro.redirect('/login');
 	<header class="flex items-center justify-between border-b border-[var(--ink)]/20 py-5">
 		<a href="/" class="font-mono text-sm font-bold uppercase tracking-widest">SB / Portfolio</a>
 		<div class="flex items-center gap-5">
-			{session.user.role === 'admin' && <a class="text-sm font-bold underline decoration-2 underline-offset-4" href="/admin">Admin</a>}
-			<button id="sign-out" class="text-sm font-bold underline decoration-2 underline-offset-4" type="button">Sign out</button>
+			{
+				session.user.role === 'admin' && (
+					<a class="text-sm font-bold underline decoration-2 underline-offset-4" href="/admin">
+						Admin
+					</a>
+				)
+			}
+			<button id="sign-out" class="text-sm font-bold underline decoration-2 underline-offset-4" type="button"
+				>Sign out</button
+			>
 		</div>
 	</header>
 	<main id="main-content" class="py-16 sm:py-24">
 		<section class="grid gap-10 border-b border-[var(--ink)]/20 pb-16 md:grid-cols-[12rem_1fr]">
 			<p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--accent)]">Your profile</p>
 			<div>
-				<h1 class="[font-family:'Bodoni_72',Didot,serif] text-5xl leading-tight font-bold sm:text-6xl">Hello, {session.user.name}.</h1>
-				<p class="mt-5 max-w-xl text-lg leading-8 text-[var(--copy)]">You are signed in through Better Auth, with your account and session stored in Cloudflare D1.</p>
+				<h1 class="[font-family:'Bodoni_72',Didot,serif] text-5xl leading-tight font-bold sm:text-6xl">
+					Hello, {session.user.name}.
+				</h1>
+				<p class="mt-5 max-w-xl text-lg leading-8 text-[var(--copy)]">
+					You are signed in through Better Auth, with your account and session stored in Cloudflare D1.
+				</p>
 			</div>
 		</section>
 		<section class="grid gap-6 py-12 sm:grid-cols-2">
