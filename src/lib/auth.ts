@@ -29,9 +29,6 @@ export const auth = betterAuth({
 	secret: authEnv.BETTER_AUTH_SECRET,
 	baseURL: authEnv.BETTER_AUTH_URL,
 	trustedOrigins,
-	emailAndPassword: {
-		enabled: true,
-	},
 	socialProviders: githubProvider,
 	plugins: [
 		admin({
