@@ -11,7 +11,10 @@ if (!session) return Astro.redirect('/login');
 <Layout title="Profile | Santhanabalan" description="Your portfolio account profile.">
 	<header class="flex items-center justify-between border-b border-[#17211b]/20 py-5">
 		<a href="/" class="font-mono text-sm font-bold uppercase tracking-widest">SB / Portfolio</a>
-		<button id="sign-out" class="text-sm font-bold underline decoration-2 underline-offset-4" type="button">Sign out</button>
+		<div class="flex items-center gap-5">
+			{session.user.role === 'admin' && <a class="text-sm font-bold underline decoration-2 underline-offset-4" href="/admin">Admin</a>}
+			<button id="sign-out" class="text-sm font-bold underline decoration-2 underline-offset-4" type="button">Sign out</button>
+		</div>
 	</header>
 	<main id="main-content" class="py-16 sm:py-24">
 		<section class="grid gap-10 border-b border-[#17211b]/20 pb-16 md:grid-cols-[12rem_1fr]">
