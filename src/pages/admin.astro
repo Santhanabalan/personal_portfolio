@@ -19,24 +19,24 @@ const result = await auth.api.listUsers({
 ---
 
 <Layout title="Admin | Santhanabalan" description="Manage portfolio user access.">
-	<header class="flex items-center justify-between border-b border-[#17211b]/20 py-5">
+	<header class="flex items-center justify-between border-b border-[var(--ink)]/20 py-5">
 		<a href="/" class="font-mono text-sm font-bold uppercase tracking-widest">SB / Portfolio</a>
 		<a class="text-sm font-bold underline decoration-2 underline-offset-4" href="/profile">Your profile</a>
 	</header>
 	<main id="main-content" class="py-14 sm:py-20">
-		<section class="flex flex-col justify-between gap-6 border-b border-[#17211b]/20 pb-10 sm:flex-row sm:items-end">
+		<section class="flex flex-col justify-between gap-6 border-b border-[var(--ink)]/20 pb-10 sm:flex-row sm:items-end">
 			<div>
-				<p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[#0a6c4d]">Access control</p>
+				<p class="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--accent)]">Access control</p>
 				<h1 class="mt-3 [font-family:'Bodoni_72',Didot,serif] text-5xl font-bold sm:text-6xl">User administration</h1>
 			</div>
-			<p class="font-mono text-sm text-[#425048]">{result.total} {result.total === 1 ? 'account' : 'accounts'}</p>
+			<p class="font-mono text-sm text-[var(--copy)]">{result.total} {result.total === 1 ? 'account' : 'accounts'}</p>
 		</section>
 
-		<p id="admin-message" class="mt-6 hidden border-l-4 border-[#e75b3a] pl-3 text-sm text-[#7c2d1a]" role="alert"></p>
+		<p id="admin-message" class="mt-6 hidden border-l-4 border-[var(--coral)] pl-3 text-sm text-[var(--danger)]" role="alert"></p>
 
-		<div class="mt-8 overflow-x-auto border border-[#17211b]/20 bg-white">
+		<div class="mt-8 overflow-x-auto border border-[var(--ink)]/20 bg-[var(--surface)]">
 			<table class="w-full min-w-[48rem] border-collapse text-left">
-				<thead class="border-b border-[#17211b]/20 bg-[#17211b] text-white">
+				<thead class="border-b border-[var(--ink)]/20 bg-[var(--action)] text-[var(--action-text)]">
 					<tr class="font-mono text-xs uppercase tracking-[0.12em]">
 						<th class="px-5 py-4" scope="col">User</th>
 						<th class="px-5 py-4" scope="col">Role</th>
@@ -44,19 +44,19 @@ const result = await auth.api.listUsers({
 						<th class="px-5 py-4 text-right" scope="col">Actions</th>
 					</tr>
 				</thead>
-				<tbody class="divide-y divide-[#17211b]/15">
+				<tbody class="divide-y divide-[var(--ink)]/15">
 					{result.users.map((user) => {
 						const isCurrentUser = user.id === session.user.id;
 						const isAdmin = user.role === 'admin';
 						return (
 							<tr>
 								<td class="px-5 py-5">
-									<p class="font-bold">{user.name}{isCurrentUser && <span class="ml-2 font-mono text-xs text-[#0a6c4d]">YOU</span>}</p>
-									<p class="mt-1 text-sm text-[#68736c]">{user.email}</p>
+									<p class="font-bold">{user.name}{isCurrentUser && <span class="ml-2 font-mono text-xs text-[var(--accent)]">YOU</span>}</p>
+									<p class="mt-1 text-sm text-[var(--muted)]">{user.email}</p>
 								</td>
 								<td class="px-5 py-5"><span class="font-mono text-xs font-bold uppercase">{user.role ?? 'user'}</span></td>
 								<td class="px-5 py-5">
-									<span class:list={['font-mono text-xs font-bold uppercase', user.banned ? 'text-[#b33b20]' : 'text-[#0a6c4d]']}>
+									<span class:list={['font-mono text-xs font-bold uppercase', user.banned ? 'text-[var(--danger-strong)]' : 'text-[var(--accent)]']}>
 										{user.banned ? 'Banned' : 'Active'}
 									</span>
 								</td>
@@ -67,7 +67,7 @@ const result = await auth.api.listUsers({
 											data-action="role"
 											data-role={isAdmin ? 'user' : 'admin'}
 											disabled={isCurrentUser}
-											class="border border-[#17211b]/30 px-3 py-2 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-40"
+											class="border border-[var(--ink)]/30 px-3 py-2 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-40"
 										>
 											{isAdmin ? 'Make user' : 'Make admin'}
 										</button>
@@ -75,7 +75,7 @@ const result = await auth.api.listUsers({
 											type="button"
 											data-action={user.banned ? 'unban' : 'ban'}
 											disabled={isCurrentUser}
-											class="border border-[#17211b]/30 px-3 py-2 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-40"
+											class="border border-[var(--ink)]/30 px-3 py-2 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-40"
 										>
 											{user.banned ? 'Unban' : 'Ban'}
 										</button>

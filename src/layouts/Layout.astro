@@ -20,16 +20,56 @@ const { title, description } = Astro.props;
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<title>{title}</title>
+		<script is:inline>
+			(() => {
+				const savedTheme = localStorage.getItem('theme');
+				const theme = savedTheme === 'light' || savedTheme === 'dark'
+					? savedTheme
+					: matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.dataset.theme = theme;
+			})();
+		</script>
 	</head>
-	<body class="min-h-screen bg-[#f7f7f2] text-[#17211b] antialiased">
+	<body class="min-h-screen bg-[var(--page)] text-[var(--ink)] antialiased">
 		<a
 			href="#main-content"
-			class="sr-only z-50 bg-[#17211b] px-4 py-3 text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+			class="sr-only z-50 bg-[var(--action)] px-4 py-3 text-[var(--action-text)] focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
 		>
 			Skip to content
 		</a>
 		<div class="mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-12">
 			<slot />
 		</div>
+		<button
+			id="theme-toggle"
+			type="button"
+			class="fixed right-4 bottom-4 z-40 grid size-11 place-items-center rounded-sm border border-[var(--ink)]/30 bg-[var(--surface)] text-xl text-[var(--ink)] shadow-[3px_3px_0_var(--ink)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]"
+			aria-label="Switch to dark mode"
+			title="Switch to dark mode"
+		>
+			<span data-theme-icon="light" aria-hidden="true">☼</span>
+			<span data-theme-icon="dark" aria-hidden="true">☾</span>
+		</button>
+		<script>
+			const toggle = document.querySelector<HTMLButtonElement>('#theme-toggle');
+			const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+
+			const syncThemeControl = () => {
+				const isDark = document.documentElement.dataset.theme === 'dark';
+				const label = `Switch to ${isDark ? 'light' : 'dark'} mode`;
+				toggle?.setAttribute('aria-label', label);
+				toggle?.setAttribute('title', label);
+				themeColor?.setAttribute('content', isDark ? '#101713' : '#f7f7f2');
+			};
+
+			toggle?.addEventListener('click', () => {
+				const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+				document.documentElement.dataset.theme = theme;
+				localStorage.setItem('theme', theme);
+				syncThemeControl();
+			});
+
+			syncThemeControl();
+		</script>
 	</body>
 </html>
