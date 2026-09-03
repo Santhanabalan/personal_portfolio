@@ -1,0 +1,89 @@
+---
+interface Props {
+	mode: 'login' | 'signup';
+}
+
+const { mode } = Astro.props;
+const isSignup = mode === 'signup';
+---
+
+<form id="auth-form" data-mode={mode} class="mt-10 space-y-5">
+	{isSignup && (
+		<label class="block">
+			<span class="mb-2 block font-mono text-xs font-bold uppercase tracking-[0.14em] text-[#425048]">Name</span>
+			<input
+				class="min-h-12 w-full rounded-none border border-[#17211b]/30 bg-white px-4 outline-none transition focus:border-[#0a6c4d] focus:ring-2 focus:ring-[#0a6c4d]/20"
+				type="text"
+				name="name"
+				autocomplete="name"
+				required
+			/>
+		</label>
+	)}
+	<label class="block">
+		<span class="mb-2 block font-mono text-xs font-bold uppercase tracking-[0.14em] text-[#425048]">Email</span>
+		<input
+			class="min-h-12 w-full rounded-none border border-[#17211b]/30 bg-white px-4 outline-none transition focus:border-[#0a6c4d] focus:ring-2 focus:ring-[#0a6c4d]/20"
+			type="email"
+			name="email"
+			autocomplete="email"
+			required
+		/>
+	</label>
+	<label class="block">
+		<span class="mb-2 block font-mono text-xs font-bold uppercase tracking-[0.14em] text-[#425048]">Password</span>
+		<input
+			class="min-h-12 w-full rounded-none border border-[#17211b]/30 bg-white px-4 outline-none transition focus:border-[#0a6c4d] focus:ring-2 focus:ring-[#0a6c4d]/20"
+			type="password"
+			name="password"
+			autocomplete={isSignup ? 'new-password' : 'current-password'}
+			minlength="8"
+			required
+		/>
+	</label>
+	<p id="auth-error" class="hidden border-l-4 border-[#e75b3a] pl-3 text-sm text-[#7c2d1a]" role="alert"></p>
+	<button
+		type="submit"
+		class="inline-flex min-h-12 w-full items-center justify-center bg-[#17211b] px-6 font-bold text-white transition-colors hover:bg-[#0a6c4d] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0a6c4d] disabled:cursor-wait disabled:opacity-60"
+	>
+		{isSignup ? 'Create account' : 'Sign in'}
+	</button>
+</form>
+
+<script>
+	import { createAuthClient } from 'better-auth/client';
+
+	const form = document.querySelector<HTMLFormElement>('#auth-form');
+	const errorMessage = document.querySelector<HTMLParagraphElement>('#auth-error');
+	const submitButton = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+	const authClient = createAuthClient();
+
+	form?.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		errorMessage?.classList.add('hidden');
+		submitButton?.setAttribute('disabled', '');
+
+		const formData = new FormData(form);
+		const email = String(formData.get('email') ?? '');
+		const password = String(formData.get('password') ?? '');
+		const mode = form.dataset.mode;
+		const result = mode === 'signup'
+			? await authClient.signUp.email({
+				name: String(formData.get('name') ?? ''),
+				email,
+				password,
+			})
+			: await authClient.signIn.email({ email, password });
+
+		if (result.error) {
+			if (errorMessage) {
+				errorMessage.textContent = result.error.message ?? 'Authentication failed. Please try again.';
+				errorMessage.classList.remove('hidden');
+			}
+			submitButton?.removeAttribute('disabled');
+			return;
+		}
+
+		window.location.assign('/profile');
+	});
+</script>
