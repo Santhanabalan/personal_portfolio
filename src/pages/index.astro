@@ -38,7 +38,7 @@ const projects = [
 			<ul class="flex gap-5 text-sm font-semibold sm:gap-8">
 				<li><a class="underline-offset-4 hover:underline focus-visible:underline" href="#about">About</a></li>
 				<li><a class="underline-offset-4 hover:underline focus-visible:underline" href="#projects">Projects</a></li>
-				<li><a class="underline-offset-4 hover:underline focus-visible:underline" href="/login">Sign in</a></li>
+				<li><a id="account-link" class="underline-offset-4 hover:underline focus-visible:underline" href="/login">Sign in</a></li>
 			</ul>
 		</nav>
 	</header>
@@ -118,3 +118,19 @@ const projects = [
 		<p>Built with Astro. Served with restraint.</p>
 	</footer>
 </Layout>
+
+<script>
+	const accountLink = document.querySelector<HTMLAnchorElement>('#account-link');
+
+	if (accountLink) {
+		fetch('/api/auth/get-session')
+			.then((response) => response.json())
+			.then((session) => {
+				if (session?.user) {
+					accountLink.href = '/profile';
+					accountLink.textContent = 'Profile';
+				}
+			})
+			.catch(() => undefined);
+	}
+</script>
