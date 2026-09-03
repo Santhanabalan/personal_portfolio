@@ -15,6 +15,9 @@
 			"database_id": "07005da4-c027-4b0e-bc96-fd050e750bb1",
 		},
 	],
+	"vars": {
+		"BETTER_AUTH_URL": "https://personal-portfolio.santhanabalan.workers.dev",
+	},
 	"observability": {
 		"logs": {
 			"enabled": true,
