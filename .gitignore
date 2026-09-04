@@ -28,3 +28,9 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# local agent setup
+.agents/
+.claude/
+skills-lock.json
+.vscode/mcp.json
