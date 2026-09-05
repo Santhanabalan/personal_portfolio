@@ -1,6 +1,6 @@
-import { env } from 'cloudflare:workers';
 import { betterAuth } from 'better-auth';
 import { admin } from 'better-auth/plugins';
+import { env } from 'cloudflare:workers';
 
 interface AuthEnv {
 	DB: D1Database;
@@ -8,6 +8,8 @@ interface AuthEnv {
 	BETTER_AUTH_URL?: string;
 	GITHUB_CLIENT_ID?: string;
 	GITHUB_CLIENT_SECRET?: string;
+	GOOGLE_CLIENT_ID?: string;
+	GOOGLE_CLIENT_SECRET?: string;
 }
 
 const authEnv = env as unknown as AuthEnv;
@@ -23,13 +25,25 @@ const githubProvider =
 				},
 			}
 		: {};
+const googleProvider =
+	authEnv.GOOGLE_CLIENT_ID && authEnv.GOOGLE_CLIENT_SECRET
+		? {
+				google: {
+					clientId: authEnv.GOOGLE_CLIENT_ID,
+					clientSecret: authEnv.GOOGLE_CLIENT_SECRET,
+				},
+			}
+		: {};
 
 export const auth = betterAuth({
 	database: authEnv.DB,
 	secret: authEnv.BETTER_AUTH_SECRET,
 	baseURL: authEnv.BETTER_AUTH_URL,
 	trustedOrigins,
-	socialProviders: githubProvider,
+	socialProviders: {
+		...githubProvider,
+		...googleProvider,
+	},
 	plugins: [
 		admin({
 			defaultRole: 'user',
