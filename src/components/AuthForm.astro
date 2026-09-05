@@ -1,17 +1,31 @@
 ---
-import octicons from '@primer/octicons';
-
-const githubIcon = octicons['mark-github'].toSVG({ width: 20, fill: 'currentColor' });
+import { siGithub, siGoogle } from 'simple-icons';
 ---
 
 <div class="mt-10 space-y-5">
 	<button
 		id="github-auth"
 		type="button"
+		data-oauth-provider="github"
+		data-loading-label="Connecting to GitHub..."
 		class="inline-flex min-h-12 w-full items-center justify-center gap-3 bg-[var(--action)] px-6 font-bold text-[var(--action-text)] transition-colors hover:bg-[var(--accent)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)] disabled:cursor-wait disabled:opacity-60"
 	>
-		<Fragment set:html={githubIcon} />
-		<span id="github-auth-label">Continue with GitHub</span>
+		<svg class="size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+			<path d={siGithub.path}></path>
+		</svg>
+		<span data-oauth-label>Continue with GitHub</span>
+	</button>
+	<button
+		id="google-auth"
+		type="button"
+		data-oauth-provider="google"
+		data-loading-label="Connecting to Google..."
+		class="inline-flex min-h-12 w-full items-center justify-center gap-3 border border-[var(--ink)]/30 bg-[var(--surface)] px-6 font-bold text-[var(--ink)] transition-colors hover:border-[var(--blue)] hover:text-[var(--blue)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--blue)] disabled:cursor-wait disabled:opacity-60"
+	>
+		<svg class="size-5" viewBox="0 0 24 24" fill={`#${siGoogle.hex}`} aria-hidden="true">
+			<path d={siGoogle.path}></path>
+		</svg>
+		<span data-oauth-label>Continue with Google</span>
 	</button>
 	<p id="auth-error" class="hidden border-l-4 border-[var(--coral)] pl-3 text-sm text-[var(--danger)]" role="alert"></p>
 </div>
@@ -20,32 +34,37 @@ const githubIcon = octicons['mark-github'].toSVG({ width: 20, fill: 'currentColo
 	import { createAuthClient } from 'better-auth/client';
 
 	const errorMessage = document.querySelector<HTMLParagraphElement>('#auth-error');
-	const githubButton = document.querySelector<HTMLButtonElement>('#github-auth');
-	const githubButtonLabel = document.querySelector<HTMLSpanElement>('#github-auth-label');
 	const authClient = createAuthClient();
-	if (new URLSearchParams(window.location.search).has('error') && errorMessage) {
-		errorMessage.textContent = 'GitHub authentication was not completed. Please try again.';
+	const errorProvider = new URLSearchParams(window.location.search).get('error');
+	if (errorProvider && errorMessage) {
+		const providerName = errorProvider === 'google' ? 'Google' : 'GitHub';
+		errorMessage.textContent = `${providerName} authentication was not completed. Please try again.`;
 		errorMessage.classList.remove('hidden');
 	}
 
-	githubButton?.addEventListener('click', async () => {
-		errorMessage?.classList.add('hidden');
-		githubButton.setAttribute('disabled', '');
-		if (githubButtonLabel) githubButtonLabel.textContent = 'Connecting to GitHub...';
+	document.querySelectorAll<HTMLButtonElement>('[data-oauth-provider]').forEach((button) => {
+		button.addEventListener('click', async () => {
+			const provider = button.dataset.oauthProvider as 'github' | 'google';
+			const label = button.querySelector<HTMLSpanElement>('[data-oauth-label]');
+			const defaultLabel = label?.textContent ?? '';
+			errorMessage?.classList.add('hidden');
+			button.setAttribute('disabled', '');
+			if (label) label.textContent = button.dataset.loadingLabel ?? 'Connecting...';
 
-		const result = await authClient.signIn.social({
-			provider: 'github',
-			callbackURL: '/profile',
-			errorCallbackURL: '/login?error=github',
-		});
+			const result = await authClient.signIn.social({
+				provider,
+				callbackURL: '/profile',
+				errorCallbackURL: `/login?error=${provider}`,
+			});
 
-		if (result.error) {
-			if (errorMessage) {
-				errorMessage.textContent = result.error.message ?? 'GitHub authentication could not be started.';
-				errorMessage.classList.remove('hidden');
+			if (result.error) {
+				if (errorMessage) {
+					errorMessage.textContent = result.error.message ?? `${defaultLabel} could not be started.`;
+					errorMessage.classList.remove('hidden');
+				}
+				button.removeAttribute('disabled');
+				if (label) label.textContent = defaultLabel;
 			}
-			githubButton.removeAttribute('disabled');
-			if (githubButtonLabel) githubButtonLabel.textContent = 'Continue with GitHub';
-		}
+		});
 	});
 </script>
