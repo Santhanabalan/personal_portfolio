@@ -49,6 +49,28 @@ if (currentPage > totalPages) return Astro.redirect(buildPageUrl(totalPages));
 const firstResult = result.total === 0 ? 0 : (currentPage - 1) * pageSize + 1;
 const lastResult = Math.min(currentPage * pageSize, result.total);
 
+interface ProviderRow {
+	userId: string;
+	providerId: string;
+}
+
+const providersByUser = new Map<string, string[]>();
+if (result.users.length > 0) {
+	const placeholders = result.users.map(() => '?').join(', ');
+	const providerResult = await env.DB.prepare(
+		`select "userId", "providerId" from "account"
+		where "userId" in (${placeholders}) and "providerId" in ('github', 'google')
+		order by "providerId"`,
+	)
+		.bind(...result.users.map((user) => user.id))
+		.all<ProviderRow>();
+	for (const row of providerResult.results) {
+		const providers = providersByUser.get(row.userId) ?? [];
+		providers.push(row.providerId);
+		providersByUser.set(row.userId, providers);
+	}
+}
+
 interface AuditRecord {
 	id: string;
 	action: string;
@@ -166,11 +188,12 @@ const getLatestActivity = (sessions: Array<{ updatedAt: Date | string }>) => {
 		</p>
 
 		<div class="mt-8 overflow-x-auto border border-[var(--ink)]/20 bg-[var(--surface)]">
-			<table class="w-full min-w-[60rem] border-collapse text-left">
+			<table class="w-full min-w-[68rem] border-collapse text-left">
 				<thead class="border-b border-[var(--ink)]/20 bg-[var(--action)] text-[var(--action-text)]">
 					<tr class="font-mono text-xs uppercase tracking-[0.12em]">
 						<th class="px-5 py-4" scope="col">User</th>
 						<th class="px-5 py-4" scope="col">Role</th>
+						<th class="px-5 py-4" scope="col">Providers</th>
 						<th class="px-5 py-4" scope="col">Sessions</th>
 						<th class="px-5 py-4" scope="col">Status</th>
 						<th class="px-5 py-4 text-right" scope="col">Actions</th>
@@ -180,7 +203,7 @@ const getLatestActivity = (sessions: Array<{ updatedAt: Date | string }>) => {
 					{
 						result.users.length === 0 ? (
 							<tr>
-								<td colspan="5" class="px-5 py-12 text-center text-[var(--muted)]">
+								<td colspan="6" class="px-5 py-12 text-center text-[var(--muted)]">
 									No users match this search.
 								</td>
 							</tr>
@@ -201,6 +224,19 @@ const getLatestActivity = (sessions: Array<{ updatedAt: Date | string }>) => {
 										</td>
 										<td class="px-5 py-5">
 											<span class="font-mono text-xs font-bold uppercase">{user.role ?? 'user'}</span>
+										</td>
+										<td class="px-5 py-5">
+											<div class="flex flex-wrap gap-2">
+												{(providersByUser.get(user.id) ?? []).length > 0 ? (
+													(providersByUser.get(user.id) ?? []).map((provider) => (
+														<span class="border border-[var(--ink)]/20 px-2 py-1 font-mono text-xs font-bold uppercase">
+															{provider}
+														</span>
+													))
+												) : (
+													<span class="font-mono text-xs text-[var(--danger)]">None</span>
+												)}
+											</div>
 										</td>
 										<td class="px-5 py-5">
 											<p class="font-mono text-xs font-bold">{userSessions.length} active</p>
