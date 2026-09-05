@@ -25,6 +25,7 @@
 		"BETTER_AUTH_URL": "https://santhanabalan.dpdns.org",
 	},
 	"observability": {
+		"enabled": true,
 		"redact_query_string": true,
 		"logs": {
 			"enabled": true,
