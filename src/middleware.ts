@@ -1,4 +1,5 @@
 import { defineMiddleware } from 'astro:middleware';
+import { auth } from './lib/auth';
 
 export const onRequest = defineMiddleware(async ({ request }, next) => {
 	const startedAt = performance.now();
@@ -15,7 +16,10 @@ export const onRequest = defineMiddleware(async ({ request }, next) => {
 	};
 
 	try {
-		const response = await next();
+		const isProtectedApi = path.startsWith('/api/') && !path.startsWith('/api/auth/');
+		const session = isProtectedApi ? await auth.api.getSession({ headers: request.headers }) : null;
+		const response =
+			isProtectedApi && !session ? Response.json({ error: 'Authentication required.' }, { status: 401 }) : await next();
 
 		console.log({
 			event: 'request.completed',
