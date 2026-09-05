@@ -19,6 +19,7 @@
 		"BETTER_AUTH_URL": "https://personal-portfolio.santhanabalan.workers.dev",
 	},
 	"observability": {
+		"redact_query_string": true,
 		"logs": {
 			"enabled": true,
 			"head_sampling_rate": 1,
