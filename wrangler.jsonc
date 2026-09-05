@@ -22,7 +22,7 @@
 		},
 	],
 	"vars": {
-		"BETTER_AUTH_URL": "https://personal-portfolio.santhanabalan.workers.dev",
+		"BETTER_AUTH_URL": "https://santhanabalan.dpdns.org",
 	},
 	"observability": {
 		"redact_query_string": true,
