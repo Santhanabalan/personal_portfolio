@@ -1,6 +1,56 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
+const title = 'Santhanabalan | Web Developer & Edge Computing';
+const description =
+	'Santhanabalan is a web developer building fast, dependable web experiences and edge-native systems with Astro, TypeScript, and Cloudflare.';
+const siteURL = new URL('/', Astro.site).href;
+const personId = `${siteURL}#person`;
+const websiteId = `${siteURL}#website`;
+const socialProfiles = [
+	{
+		name: 'GitHub',
+		url: 'https://github.com/Santhanabalan',
+		label: 'Santhanabalan on GitHub',
+	},
+	{
+		name: 'LinkedIn',
+		url: 'https://in.linkedin.com/in/santhanabalan',
+		label: 'Santhanabalan Vasu on LinkedIn',
+	},
+];
+const structuredData = {
+	'@context': 'https://schema.org',
+	'@graph': [
+		{
+			'@type': 'Person',
+			'@id': personId,
+			name: 'Santhanabalan',
+			alternateName: 'Santhanabalan Vasu',
+			url: siteURL,
+			jobTitle: 'Web Developer',
+			sameAs: socialProfiles.map((profile) => profile.url),
+		},
+		{
+			'@type': 'WebSite',
+			'@id': websiteId,
+			url: siteURL,
+			name: 'Santhanabalan',
+			inLanguage: 'en',
+			author: { '@id': personId },
+		},
+		{
+			'@type': 'ProfilePage',
+			'@id': siteURL,
+			url: siteURL,
+			name: title,
+			description,
+			isPartOf: { '@id': websiteId },
+			mainEntity: { '@id': personId },
+		},
+	],
+};
+
 const projects = [
 	{
 		title: 'Edge Notes',
@@ -23,10 +73,13 @@ const projects = [
 ];
 ---
 
-<Layout
-	title="Santhanabalan | Developer Portfolio"
-	description="Santhanabalan builds fast, dependable web experiences and edge-native systems."
->
+<Layout title={title} description={description} indexable>
+	<script
+		slot="head"
+		type="application/ld+json"
+		is:inline
+		set:html={JSON.stringify(structuredData).replaceAll('<', '\\u003c')}
+	/>
 	<header class="flex items-center justify-between border-b border-[var(--ink)]/20 py-5">
 		<a
 			href="/"
@@ -53,13 +106,14 @@ const projects = [
 		>
 			<div>
 				<p class="mb-5 font-mono text-xs font-bold uppercase tracking-[0.18em] text-[var(--accent)]">
-					Hello, I am Santhanabalan
+					Web developer &amp; edge systems
 				</p>
 				<h1
-					class="max-w-4xl [font-family:'Bodoni_72',Didot,serif] text-5xl leading-[0.98] font-bold sm:text-7xl lg:text-8xl"
+					class="max-w-4xl [font-family:'Bodoni_72',Didot,serif] text-4xl leading-tight font-bold sm:text-6xl lg:text-7xl"
 				>
-					I build for the<br />fast side of the web.
+					Santhanabalan
 				</h1>
+				<p class="mt-5 max-w-2xl text-2xl leading-tight font-bold sm:text-3xl">I build for the fast side of the web.</p>
 				<p class="mt-7 max-w-2xl text-lg leading-8 text-[var(--copy)] sm:text-xl">
 					Developer focused on dependable interfaces, thoughtful systems, and edge infrastructure that keeps distance
 					out of the way.
@@ -70,6 +124,25 @@ const projects = [
 				>
 					View selected work
 				</a>
+				<nav aria-label="Social profiles" class="mt-5">
+					<ul class="flex flex-wrap items-center gap-x-6 gap-y-2">
+						{
+							socialProfiles.map((profile) => (
+								<li>
+									<a
+										href={profile.url}
+										aria-label={profile.label}
+										target="_blank"
+										rel="me noopener noreferrer"
+										class="inline-flex min-h-11 items-center font-semibold underline underline-offset-4 hover:text-[var(--accent)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]"
+									>
+										{profile.name}
+									</a>
+								</li>
+							))
+						}
+					</ul>
+				</nav>
 			</div>
 
 			<aside class="border-l-4 border-[var(--yellow)] pl-5" aria-label="Current focus">

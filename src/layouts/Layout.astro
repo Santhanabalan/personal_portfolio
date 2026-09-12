@@ -4,9 +4,11 @@ import '../styles/global.css';
 interface Props {
 	title: string;
 	description: string;
+	indexable?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, indexable = false } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
@@ -16,10 +18,23 @@ const { title, description } = Astro.props;
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
+		<meta name="author" content="Santhanabalan" />
+		<meta name="robots" content={indexable ? 'index, follow, max-image-preview:large' : 'noindex, nofollow'} />
+		<link rel="canonical" href={canonicalURL} />
+		<link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="Santhanabalan" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonicalURL} />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
 		<meta name="theme-color" content="#f7f7f2" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<title>{title}</title>
+		<slot name="head" />
 		<script is:inline>
 			(() => {
 				const savedTheme = localStorage.getItem('theme');
