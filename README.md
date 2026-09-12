@@ -38,9 +38,10 @@ A server-rendered personal portfolio built with Astro and deployed to Cloudflare
    BETTER_AUTH_URL=http://localhost:4321
    ```
 
-4. Start the Astro development server:
+4. Export the required public URL and start the Astro development server:
 
    ```sh
+   export SITE_URL=http://localhost:4321
    npm run dev
    ```
 
@@ -71,6 +72,26 @@ GitHub OAuth is enabled only when both GitHub variables are present. Configure t
 ```text
 https://<your-domain>/api/auth/callback/github
 ```
+
+### Public site URL
+
+Set the required `SITE_URL` to the public origin, including `https://`, in your Worker's **build variables and secrets** in the Cloudflare dashboard. See [Workers Builds configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/).
+
+[astro.config.mjs](astro.config.mjs) reads this build-time variable for canonical URLs, structured data, robots.txt, and the sitemap. There is no default: a missing or blank value stops Astro with a configuration error. Development, builds, checks, and deployments require this variable.
+
+For a local production build (replace the example URL with your public origin):
+
+```sh
+SITE_URL=https://portfolio.example npm run build
+```
+
+This variable is not a secret. Adding it only to Worker runtime variables or `.dev.vars` will not configure Astro's `site`; export it to the build process. Changing it requires a new build and deployment.
+
+When changing domains:
+
+1. Update the `SITE_URL` build variable.
+2. Update the custom domain in `routes` and the runtime `BETTER_AUTH_URL` in [wrangler.jsonc](wrangler.jsonc), and update the OAuth callback URLs for any enabled providers.
+3. Rebuild and deploy, then redirect the old domain to the new one if you still control it.
 
 ## Database migrations
 
@@ -140,10 +161,10 @@ Routes under `/api/` require an authenticated session, except for Better Auth ha
 
 3. Configure the required production secrets.
 
-4. Build and deploy:
+4. Build and deploy with your production origin (replace the example URL):
 
    ```sh
-   npm run deploy
+   SITE_URL=https://portfolio.example npm run deploy
    ```
 
 Deployment settings, including the custom domain and D1 binding, are defined in `wrangler.jsonc`.
