@@ -19,14 +19,14 @@
 		"astro": "astro"
 	},
 	"dependencies": {
-		"@astrojs/cloudflare": "^14.4.0",
+		"@astrojs/cloudflare": "^14.4.2",
 		"@astrojs/sitemap": "^3.7.4",
 		"@tailwindcss/vite": "^4.3.3",
-		"astro": "^7.3.8",
-		"better-auth": "^1.7.10",
+		"astro": "^7.4.2",
+		"better-auth": "^1.7.12",
 		"simple-icons": "^16.35.0",
 		"tailwindcss": "^4.3.3",
-		"wrangler": "^4.149.0"
+		"wrangler": "^4.152.0"
 	},
 	"allowScripts": {
 		"esbuild": true
