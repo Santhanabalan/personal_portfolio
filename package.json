@@ -19,12 +19,12 @@
 		"astro": "astro"
 	},
 	"dependencies": {
-		"@astrojs/cloudflare": "^14.4.3",
-		"@astrojs/sitemap": "^3.7.4",
-		"@tailwindcss/vite": "^4.3.3",
-		"astro": "^7.4.4",
-		"better-auth": "^1.7.14",
-		"simple-icons": "^16.36.0",
+		"@astrojs/cloudflare": "^14.4.9",
+		"@astrojs/sitemap": "^3.7.6",
+		"@tailwindcss/vite": "^4.3.5",
+		"astro": "^7.4.13",
+		"better-auth": "^1.7.26",
+		"simple-icons": "^16.38.0",
 		"tailwindcss": "^4.3.3",
 		"wrangler": "^4.156.0"
 	},
